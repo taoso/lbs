@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>拾取坐标</title>
+        <style type="text/css">  
+        html{height:100%}  
+        body{height:100%;margin:0px;padding:0px}  
+        #map{height:100%}  
+        </style>
+        <script type="text/javascript">
+            function init() {
+                var map = new AMap.Map('map', {
+                    center: new AMap.LngLat(117.014, 36.645),
+                    level: 16
+                });
+                AMap.event.addListener(map, 'click', function(event) {
+                    lnglat = event.lnglat;
+                    var win = new AMap.InfoWindow({
+                        content: '<p>' + lnglat.lng + ',' + lnglat.lat + '</p>'
+                    });
+                    win.open(map, lnglat);
+                });
+            }
+            function loadScript() {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "http://webapi.amap.com/maps?v=1.2&callback=init";
+                document.body.appendChild(script);
+            }
+            window.onload = loadScript;
+        </script>
+    </head>
+    <body>
+        <div id="map"></div>
+    </body>
+</html>
+
+

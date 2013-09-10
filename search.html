@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>搜索附近</title>
+        <style type="text/css">  
+        html{height:100%}  
+        body{height:100%;margin:0px;padding:0px}  
+        #map{height:100%}  
+        </style>
+        <script type="text/javascript">
+            function init() {
+                var map = new AMap.Map('map', {
+                    center: new AMap.LngLat(117.014, 36.645),
+                    level: 16
+                });
+                AMap.event.addListener(map, 'click', function(event) {
+                    lnglat = event.lnglat;
+                    var url = 'http://192.168.1.125:8080/geohash?';
+                    var req = new XMLHttpRequest();
+                    req.onreadystatechange = function() {
+                        if (req.readyState == 4) {
+                            var data = JSON.parse(req.responseText);
+                            var pathes = data.pathes;
+
+                            var path = pathes[0];
+                            var aPath = new Array();
+                            for (var i = 0; i < path.length; i++) {
+                                aPath.push(new AMap.LngLat(path[i][0], path[i][1]));
+                            }
+                            var polygon=new AMap.Polygon({
+                                map: map,
+                                path: aPath,
+                                strokecolor: "#0000ff",
+                                strokeOpacity: 0.2,
+                                strokeWeight: 3,
+                                fillColor: "#f5deb3",
+                                fillOpacity: 0.65
+                            });
+
+                            for(var n = 1; n < pathes.length; n ++) {
+                            var path = pathes[n];
+                            var aPath = new Array();
+                            for (var i = 0; i < path.length; i++) {
+                                aPath.push(new AMap.LngLat(path[i][0], path[i][1]));
+                            }
+                            var polygon=new AMap.Polygon({
+                                map: map,
+                                path: aPath,
+                                strokecolor: "#0000ff",
+                                strokeOpacity: 0.2,
+                                strokeWeight: 3,
+                                fillColor: "#f5deb3",
+                                fillOpacity: 0.35
+                            });
+                            }
+
+                            map.setFitView();
+
+                            var searchreq = new XMLHttpRequest();
+                            var searchurl = 'http://192.168.1.125:8080/neighbors?';
+                            searchurl += 'lat=' + lnglat.lat + '&lng=' + lnglat.lng;
+                            searchreq.onreadystatechange = function () {
+                                if (req.readyState == 4) {
+                                    var points= JSON.parse(searchreq.responseText);
+                                    for (var n = 0; n < points.length; n++) {
+                                        var point = points[n];
+                                        var marker = new AMap.Marker({
+                                            map:map,
+                                            position: new AMap.LngLat(point.lng, point.lat),
+                                            icon:"http://webapi.amap.com/images/0.png",
+                                            offset: new AMap.Pixel(-10, -35)
+                                        });
+                                    }
+                                }
+                            };
+                            searchreq.open('GET', searchurl, true);
+                            searchreq.send();
+                        }
+                    };
+                    url += 'lat=' + lnglat.lat + '&lng=' + lnglat.lng;
+                    req.open('GET', url, true);
+                    req.send();
+                    //var marker = new AMap.Marker({
+                    //    map:map,
+                    //    position: new AMap.LngLat(lnglat.lng, lnglat.lat),
+                    //    icon:"http://webapi.amap.com/images/0.png",
+                    //    offset: new AMap.Pixel(-10, -35)
+                    //});
+                });
+            }
+            function loadScript() {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "http://webapi.amap.com/maps?v=1.2&callback=init";
+                document.body.appendChild(script);
+            }
+            window.onload = loadScript;
+        </script>
+    </head>
+    <body>
+        <div id="map"></div>
+    </body>
+</html>
+
+

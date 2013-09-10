@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>更新地理位置</title>
+        <style type="text/css">  
+        html{height:100%}  
+        body{height:100%;margin:0px;padding:0px}  
+        #map{height:100%}  
+        </style>
+        <script type="text/javascript">
+            function init() {
+                var map = new AMap.Map('map', {
+                    center: new AMap.LngLat(117.014, 36.645),
+                    level: 16
+                });
+                AMap.event.addListener(map, 'click', function(event) {
+                    lnglat = event.lnglat;
+                    var uid = Math.floor(Math.random() * 1000) + 1;
+                    var url = 'http://192.168.1.125:8080/user/';
+                    url += uid + '/location?';
+                    var req = new XMLHttpRequest();
+                    req.onreadystatechange = function() {
+                        if (req.readyState == 4) {
+                            console.log('hehe');
+                        }
+                    };
+                    url += 'lat=' + lnglat.lat + '&lng=' + lnglat.lng;
+                    req.open('PUT', url, true);
+                    req.send();
+                    var marker = new AMap.Marker({
+                        map:map,
+                        position: new AMap.LngLat(lnglat.lng, lnglat.lat),
+                        icon:"http://webapi.amap.com/images/0.png",
+                        offset: new AMap.Pixel(-10, -35)
+                    });
+                });
+            }
+            function loadScript() {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "http://webapi.amap.com/maps?v=1.2&callback=init";
+                document.body.appendChild(script);
+            }
+            window.onload = loadScript;
+        </script>
+    </head>
+    <body>
+        <div id="map"></div>
+    </body>
+</html>
+
+
