@@ -1,6 +1,6 @@
 <?php
-require 'Slim/Slim.php';
-\Slim\Slim::registerAutoloader();
+require 'vendor/autoload.php';
+require 'src/autoload.php';
 
 use Jalan\Location;
 use Geo\GeoHash;
